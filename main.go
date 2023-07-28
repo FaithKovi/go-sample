@@ -38,7 +38,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 </head>
 <body>
   <div>
-    <h1>Hello World!, This Go application runs on </h1>
+    <h1>Hello World!, This Go application runs on Triggr</h1>
     <p>Welcome to my webpage.</p>
     <p>This is a sample Go application's webpage.</p>
   </div>
