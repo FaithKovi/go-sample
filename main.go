@@ -5,53 +5,28 @@ import (
 	"net/http"
 )
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	// Set the content type to HTML
-	w.Header().Set("Content-Type", "text/html")
-
-	// Add your desired HTML content
-	htmlContent := `
-<!DOCTYPE html>
-<html>
-<head>
-  <title>My Go Webpage</title>
-  <style>
-    /* Add your CSS code here */
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #e6f7ff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-
-    h1 {
-      color: #007bff;
-    }
-
-    p {
-      color: #333;
-    }
-  </style>
-</head>
-<body>
-  <div>
-    <h1>Hello World!, This Go application runs on Triggr</h1>
-    <p>Welcome to my webpage.</p>
-    <p>This is a sample Go application's webpage.</p>
-  </div>
-</body>
-</html>
-`
-
-	// Write the HTML content to the response
-	fmt.Fprintf(w, htmlContent)
-}
-
 func main() {
-	http.HandleFunc("/", handler)
+	// Create a new ServeMux
+	r := http.NewServeMux()
+
+	// Serve static files from the "static" directory with "/static/" prefix
+	fs := http.FileServer(http.Dir("static/"))
+	r.Handle("/static/", http.StripPrefix("/static/", fs))
+
+	// Set up the root handler to serve the "index.html" file
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "static/index.html")
+	})
+
+	// Set up the HTTP server
+	server := &http.Server{
+		Addr:    ":3007",
+		Handler: r,
+	}
+
+	// Start the server
 	fmt.Println("Server is listening on port 3007...")
-	http.ListenAndServe(":3007", nil)
+	if err := server.ListenAndServe(); err != nil {
+		fmt.Printf("Error starting the server: %s\n", err)
+	}
 }
